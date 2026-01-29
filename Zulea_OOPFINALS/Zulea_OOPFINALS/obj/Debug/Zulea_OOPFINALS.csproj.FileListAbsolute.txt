@@ -1,7 +1,0 @@
-C:\Users\riniu\source\repos\Zulea_OOPFINALS\Zulea_OOPFINALS\bin\Debug\Zulea_OOPFINALS.exe.config
-C:\Users\riniu\source\repos\Zulea_OOPFINALS\Zulea_OOPFINALS\bin\Debug\Zulea_OOPFINALS.exe
-C:\Users\riniu\source\repos\Zulea_OOPFINALS\Zulea_OOPFINALS\bin\Debug\Zulea_OOPFINALS.pdb
-C:\Users\riniu\source\repos\Zulea_OOPFINALS\Zulea_OOPFINALS\obj\Debug\Zulea_OOPFINALS.csproj.AssemblyReference.cache
-C:\Users\riniu\source\repos\Zulea_OOPFINALS\Zulea_OOPFINALS\obj\Debug\Zulea_OOPFINALS.csproj.CoreCompileInputs.cache
-C:\Users\riniu\source\repos\Zulea_OOPFINALS\Zulea_OOPFINALS\obj\Debug\Zulea_OOPFINALS.exe
-C:\Users\riniu\source\repos\Zulea_OOPFINALS\Zulea_OOPFINALS\obj\Debug\Zulea_OOPFINALS.pdb
