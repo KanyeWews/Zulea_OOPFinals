@@ -6,33 +6,37 @@ using System.Threading.Tasks;
 
 namespace OOP_FINALS
 {
-    internal class Ticket  // Represents a purchased ticket
+    internal class Ticket
     {
-        // Private fields
-        private string _ticketId;        // Unique ticket ID
-        private Schedule _bookedSchedule; // Which schedule was booked
-        private int _seatNumber;         // Which seat
-        private DateTime _purchaseTime;  // When purchased
-        private double _price;           // Ticket price
+        private string _ticketId;        
+        private Schedule _bookedSchedule; 
+        private int _seatNumber;         
+        private DateTime _purchaseTime;  
+        private double _price;           
 
-        // Constructor
         public Ticket(Schedule schedule, int seatNum, double price)
         {
-            // Generate unique ticket ID (first 5 chars of GUID)
-            _ticketId = "TKT" + Guid.NewGuid().ToString().Substring(0, 5).ToUpper();
-            _bookedSchedule = schedule;  // Store schedule
-            _seatNumber = seatNum;       // Store seat number
-            _purchaseTime = DateTime.Now; // Current time
-            _price = price;              // Store price
+            _ticketId = "TKT:" + Guid.NewGuid().ToString().Substring(0, 5).ToUpper();
+            _bookedSchedule = schedule;  
+            _seatNumber = seatNum;       
+            _purchaseTime = DateTime.Now; 
+            _price = price;              
         }
 
-        // Getter methods
+        public Ticket(string ticketId, Schedule schedule, int seatNum, DateTime purchaseTime, double price)
+        {
+            _ticketId = ticketId;
+            _bookedSchedule = schedule;
+            _seatNumber = seatNum;
+            _purchaseTime = purchaseTime;
+            _price = price;
+        }
+
         public string GetTicketId() { return _ticketId; }
         public int GetSeatNumber() { return _seatNumber; }
         public double GetPrice() { return _price; }
         public DateTime GetPurchaseTime() { return _purchaseTime; }
 
-        // Print ticket - like POS system
         public void PrintTicket()
         {
             Console.WriteLine("\n========= BUS TICKET =========");
@@ -45,8 +49,7 @@ namespace OOP_FINALS
             Console.WriteLine($"Date:    {_purchaseTime:MM/dd/yyyy}");
             Console.WriteLine("==============================\n");
         }
-
-        // Print receipt - like POS system
+ 
         public void PrintReceipt()
         {
             Console.WriteLine("\n========= RECEIPT =========");

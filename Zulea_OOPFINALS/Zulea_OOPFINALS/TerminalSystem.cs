@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,130 +9,368 @@ namespace OOP_FINALS
 {
     internal class TerminalSystem
     {
-        // Store all buses in the terminal
         private List<Bus> _buses = new List<Bus>();
-        // Store all available routes
         private List<Route> _routes = new List<Route>();
-        // Store all scheduled trips
         private List<Schedule> _schedules = new List<Schedule>();
-        // Store all tickets sold today
         private List<Ticket> _tickets = new List<Ticket>();
+        private FileManager _dataManager;   
 
-        // Constructor - runs when program starts
         public TerminalSystem()
         {
             Console.WriteLine("=== BUS TERMINAL SYSTEM ===\n");
-            CreateSampleData();  // Create initial test data
-            RunMainMenu();       // Show main menu to user
+            _dataManager = new FileManager();
+            LoadSystemData();
+
+            if (_buses.Count == 0)
+            {
+                Console.WriteLine("No data found. Creating sample data...\n");
+                CreateSampleData();
+                SaveSystemData(); 
+                Console.ReadKey();
+            }
+            RunMainMenu();
         }
 
-        // Create sample data for testing
         private void CreateSampleData()
         {
-            Console.WriteLine("Creating sample data...\n");
+            Console.WriteLine("Creating comprehensive sample data...\n");
 
-            // Create first bus object
+            // ========== CREATE MORE BUSES ==========
             Bus bus1 = new Bus("BUS01", "ABC-123", 50);
-            // Create second bus object
-            Bus bus2 = new Bus("BUS02", "XYZ-789", 45);
-            // Assign driver to first bus
-            bus1.AssignDriver("John Smith");
-            // Assign driver to second bus
-            bus2.AssignDriver("Maria Garcia");
+            Bus bus2 = new Bus("BUS02", "DEF-456", 45);
+            Bus bus3 = new Bus("BUS03", "GHI-789", 55);
+            Bus bus4 = new Bus("BUS04", "JKL-012", 40);
+            Bus bus5 = new Bus("BUS05", "MNO-345", 50); // This bus will be AVAILABLE
 
-            // Add buses to the list
+            bus1.AssignDriver("John Smith");
+            bus2.AssignDriver("Maria Garcia");
+            bus3.AssignDriver("Robert Johnson");
+            bus4.AssignDriver("Lisa Wong");
+            bus5.AssignDriver("David Chen"); // Available driver
+
             _buses.Add(bus1);
             _buses.Add(bus2);
+            _buses.Add(bus3);
+            _buses.Add(bus4);
+            _buses.Add(bus5);
 
-            // Create first route (Los Angeles with stops)
-            Route route1 = new Route("R01", "Los Angeles");
-            route1.AddStop("San Diego");      // Add first stop
-            route1.AddStop("Santa Barbara");  // Add second stop
+            // ========== CREATE MORE ROUTES ==========
+            Route route1 = new Route("R01", "EDSA Carousel");
+            route1.AddStop("Caloocan");
+            route1.AddStop("Makati");
+            route1.AddStop("Mandaluyong");
+            route1.AddStop("Paranaque");
+            route1.AddStop("Pasay");
 
-            // Create second route (San Francisco with stops)
             Route route2 = new Route("R02", "San Francisco");
-            route2.AddStop("Sacramento");  // Add first stop
-            route2.AddStop("San Jose");    // Add second stop
+            route2.AddStop("Sacramento");
+            route2.AddStop("San Jose");
 
-            // Add routes to the list
+            Route route3 = new Route("R03", "QC Loop");
+            route3.AddStop("Cubao");
+            route3.AddStop("Katipunan");
+            route3.AddStop("Fairview");
+            route3.AddStop("Novaliches");
+
+            Route route4 = new Route("R04", "Manila Bay");
+            route4.AddStop("Luneta");
+            route4.AddStop("Intramuros");
+            route4.AddStop("MOA");
+            route4.AddStop("Baclaran");
+
+            Route route5 = new Route("R05", "Airport Express");
+            route5.AddStop("NAIA Terminal 1");
+            route5.AddStop("NAIA Terminal 2");
+            route5.AddStop("NAIA Terminal 3");
+            route5.AddStop("NAIA Terminal 4");
+
             _routes.Add(route1);
             _routes.Add(route2);
+            _routes.Add(route3);
+            _routes.Add(route4);
+            _routes.Add(route5);
 
-            // **FIX: Use FUTURE dates (tomorrow) instead of today**
-            DateTime today = DateTime.Today;        // Get today's date (midnight)
-            DateTime tomorrow = today.AddDays(1);   // Get tomorrow's date
+            // ========== CREATE SCHEDULES WITH FIXED DATES ==========
+            // Use a fixed date (e.g., December 20, 2024)
+            DateTime fixedDate = new DateTime(2024, 12, 20); // Any date you want
 
-            // Schedule 1: Bus1 on Route1, TOMORROW at 8 AM (was: today at 8 AM)
-            Schedule schedule1 = new Schedule("SCH01", bus1, route1, tomorrow.AddHours(8));
+            // === MORNING SCHEDULES (6 AM - 11 AM) ===
+            // Assign buses 1-4 only, keep bus 5 AVAILABLE
+            Schedule schedule1 = new Schedule("SCH01", bus1, route1, fixedDate.AddHours(6));   // 6:00 AM
+            Schedule schedule2 = new Schedule("SCH02", bus2, route2, fixedDate.AddHours(7).AddMinutes(30)); // 7:30 AM
+            Schedule schedule3 = new Schedule("SCH03", bus3, route3, fixedDate.AddHours(8).AddMinutes(15)); // 8:15 AM
+            Schedule schedule4 = new Schedule("SCH04", bus4, route4, fixedDate.AddHours(9));   // 9:00 AM
+            Schedule schedule5 = new Schedule("SCH05", bus1, route5, fixedDate.AddHours(10).AddMinutes(45)); // 10:45 AM (reuse bus1)
 
-            // Schedule 2: Bus2 on Route2, TOMORROW at 10 AM (was: today at 10 AM)
-            Schedule schedule2 = new Schedule("SCH02", bus2, route2, tomorrow.AddHours(10));
+            // === AFTERNOON SCHEDULES (12 PM - 4 PM) ===
+            // Reuse buses 1-4, keep bus 5 AVAILABLE
+            Schedule schedule6 = new Schedule("SCH06", bus2, route2, fixedDate.AddHours(12));  // 12:00 PM
+            Schedule schedule7 = new Schedule("SCH07", bus3, route3, fixedDate.AddHours(13).AddMinutes(30)); // 1:30 PM
+            Schedule schedule8 = new Schedule("SCH08", bus4, route4, fixedDate.AddHours(14).AddMinutes(15)); // 2:15 PM
+            Schedule schedule9 = new Schedule("SCH09", bus1, route5, fixedDate.AddHours(15).AddMinutes(45)); // 3:45 PM
 
-            // Schedule 3: Bus1 on Route1, TOMORROW at 3 PM (was: today at 3 PM)
-            Schedule schedule3 = new Schedule("SCH03", bus1, route1, tomorrow.AddHours(15));
+            // === EVENING SCHEDULES (5 PM - 8 PM) ===
+            // Still not using bus 5 - KEEP IT AVAILABLE
+            Schedule schedule10 = new Schedule("SCH10", bus2, route1, fixedDate.AddHours(17)); // 5:00 PM
+            Schedule schedule11 = new Schedule("SCH11", bus3, route3, fixedDate.AddHours(18).AddMinutes(30)); // 6:30 PM
+            Schedule schedule12 = new Schedule("SCH12", bus4, route4, fixedDate.AddHours(19).AddMinutes(15)); // 7:15 PM
 
-            // **NEW: Added 4th schedule for day after tomorrow**
-            Schedule schedule4 = new Schedule("SCH04", bus2, route1, today.AddDays(2).AddHours(9));
+            // === NIGHT SCHEDULES (9 PM - 11 PM) ===
+            // Use bus 3 and 4 only, KEEP BUS 5 AVAILABLE
+            Schedule schedule13 = new Schedule("SCH13", bus3, route5, fixedDate.AddHours(21)); // 9:00 PM
+            Schedule schedule14 = new Schedule("SCH14", bus4, route2, fixedDate.AddHours(22).AddMinutes(30)); // 10:30 PM
 
-            // Add all schedules to the list
+            // ========== ADD ALL SCHEDULES ==========
             _schedules.Add(schedule1);
             _schedules.Add(schedule2);
             _schedules.Add(schedule3);
             _schedules.Add(schedule4);
+            _schedules.Add(schedule5);
+            _schedules.Add(schedule6);
+            _schedules.Add(schedule7);
+            _schedules.Add(schedule8);
+            _schedules.Add(schedule9);
+            _schedules.Add(schedule10);
+            _schedules.Add(schedule11);
+            _schedules.Add(schedule12);
+            _schedules.Add(schedule13);
+            _schedules.Add(schedule14);
 
-            // **FIX: Book seats on multiple schedules (not just schedule1)**
-            schedule1.BookSeat(5);   // Book seat 5 on schedule1
-            schedule1.BookSeat(12);  // Book seat 12 on schedule1
-            schedule1.BookSeat(23);  // Book seat 23 on schedule1
+            // ========== BOOK SOME SEATS ==========
+            // Morning buses - more crowded
+            schedule1.BookSeat(5); schedule1.BookSeat(12); schedule1.BookSeat(23);
+            schedule2.BookSeat(8); schedule2.BookSeat(15); schedule2.BookSeat(30);
+            schedule3.BookSeat(10); schedule3.BookSeat(20); schedule3.BookSeat(35);
 
-            // **NEW: Also book seats on other schedules**
-            schedule2.BookSeat(8);   // Book seat 8 on schedule2
-            schedule2.BookSeat(15);  // Book seat 15 on schedule2
-            schedule3.BookSeat(30);  // Book seat 30 on schedule3
+            // Afternoon buses
+            schedule6.BookSeat(7); schedule6.BookSeat(14);
+            schedule7.BookSeat(12); schedule7.BookSeat(25);
 
-            Console.WriteLine("Sample data created successfully!");
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();  // Wait for user to press any key
+            // Evening buses - rush hour
+            schedule10.BookSeat(15); schedule10.BookSeat(30); schedule10.BookSeat(45);
+            schedule11.BookSeat(20); schedule11.BookSeat(40);
+
+            // Night buses - less crowded
+            schedule13.BookSeat(5); schedule13.BookSeat(10);
+            schedule14.BookSeat(8);
+
+            Console.WriteLine("✓ Created 5 buses");
+            Console.WriteLine("  • BUS01-BUS04: Assigned to schedules (In Service)");
+            Console.WriteLine("  • BUS05: AVAILABLE for new schedules ✓");
+            Console.WriteLine("✓ Created 5 routes");
+            Console.WriteLine("✓ Created 14 schedules (6 AM - 10:30 PM)");
+            Console.WriteLine("✓ Booked seats realistically");
+            Console.WriteLine($"✓ All schedules are for: {fixedDate:MMMM dd, yyyy}");
+            Console.WriteLine("\nIMPORTANT: BUS05 is AVAILABLE for testing 'Add Schedule' feature!");
+            Console.WriteLine("✓ Sample data created successfully!");
         }
 
-        // Main menu - shows options to user
+        private void LoadSystemData()
+        {
+            Console.WriteLine("Loading system data...\n");
+
+            // Load BusData from CSV
+            List<string> busData = _dataManager.LoadBuses();
+            foreach (string line in busData)
+            {
+                if (!string.IsNullOrWhiteSpace(line))
+                {
+                    string[] parts = line.Split(',');
+                    if (parts.Length >= 5)
+                    {
+                        Bus bus = new Bus(parts[0], parts[1], int.Parse(parts[2]));
+                        bus.SetAvailability(bool.Parse(parts[3]));
+                        bus.AssignDriver(parts[4]);
+                        _buses.Add(bus);
+                    }
+                }
+            }
+
+            // Load routes from CSV
+            List<string> routeData = _dataManager.LoadRoutes();
+            foreach (string line in routeData)
+            {
+                if (!string.IsNullOrWhiteSpace(line))
+                {
+                    string[] parts = line.Split(',');
+                    if (parts.Length >= 2)
+                    {
+                        Route route = new Route(parts[0], parts[1]);
+                        for (int i = 2; i < parts.Length; i++)
+                        {
+                            if (!string.IsNullOrWhiteSpace(parts[i]))
+                                route.AddStop(parts[i]);
+                        }
+                        _routes.Add(route);
+                    }
+                }
+            }
+
+            // Load schedules from CSV
+            List<string> scheduleData = _dataManager.LoadSchedules();
+            foreach (string line in scheduleData)
+            {
+                if (!string.IsNullOrWhiteSpace(line))
+                {
+                    string[] parts = line.Split(',');
+                    if (parts.Length >= 5)
+                    {
+                        string scheduleId = parts[0];
+                        string busId = parts[1];
+                        string routeId = parts[2];
+                        DateTime departureTime = DateTime.Parse(parts[3]);
+                        string bookedSeats = parts[4];
+
+                        // Find bus and route
+                        Bus bus = _buses.Find(b => b.GetBusId() == busId);
+                        Route route = _routes.Find(r => r.GetRouteId() == routeId);
+
+                        if (bus != null && route != null)
+                        {
+                            Schedule schedule = new Schedule(scheduleId, bus, route, departureTime);
+
+                            // Mark booked seats
+                            if (!string.IsNullOrWhiteSpace(bookedSeats))
+                            {
+                                string[] seats = bookedSeats.Split('|');
+                                foreach (string seat in seats)
+                                {
+                                    if (int.TryParse(seat, out int seatNum))
+                                        schedule.BookSeat(seatNum);
+                                }
+                            }
+
+                            _schedules.Add(schedule);
+                        }
+                    }
+                }
+            }
+
+            // Load tickets from CSV
+            List<string> ticketData = _dataManager.LoadTickets();
+            foreach (string line in ticketData)
+            {
+                if (!string.IsNullOrWhiteSpace(line))
+                {
+                    string[] parts = line.Split(',');
+                    if (parts.Length >= 5)
+                    {
+                        string ticketId = parts[0];
+                        string scheduleId = parts[1];
+                        int seatNumber = int.Parse(parts[2]);
+                        DateTime purchaseTime = DateTime.Parse(parts[3]);
+                        double price = double.Parse(parts[4]);
+
+                        // Find the schedule for this ticket
+                        Schedule schedule = _schedules.Find(s => s.GetScheduleId() == scheduleId);
+                        if (schedule != null)
+                        {
+                            // Create ticket object using the new constructor
+                            Ticket ticket = new Ticket(ticketId, schedule, seatNumber, purchaseTime, price);
+                            _tickets.Add(ticket);
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine($"Loaded: {_buses.Count} buses, {_routes.Count} routes, {_schedules.Count} schedules, {_tickets.Count} tickets");
+        }
+
+        private void SaveSystemData()
+        {
+            Console.WriteLine("\nSaving system data...");
+
+            List<string> busData = new List<string>();
+            foreach (Bus bus in _buses)
+            {
+                string line = $"{bus.GetBusId()},{bus.GetLicensePlate()},{bus.GetTotalSeats()}," +
+                            $"{bus.IsAvailable()},{bus.GetDriverName()}";
+                busData.Add(line);
+            }
+            _dataManager.SaveBuses(busData);
+
+            List<string> routeData = new List<string>();
+            foreach (Route route in _routes)
+            {
+                string stops = string.Join(",", route.GetStops());
+                string line = $"{route.GetRouteId()},{route.GetDestination()}";
+                if (!string.IsNullOrEmpty(stops))
+                    line += $",{stops}";
+                routeData.Add(line);
+            }
+            _dataManager.SaveRoutes(routeData);
+
+            List<string> scheduleData = new List<string>();
+            foreach (Schedule schedule in _schedules)
+            {
+                List<int> bookedSeats = schedule.GetBookedSeats();
+                string bookedSeatsStr = string.Join("|", bookedSeats);
+
+                string line = $"{schedule.GetScheduleId()},{schedule.GetBus().GetBusId()}," +
+                            $"{schedule.GetRoute().GetRouteId()},{schedule.GetDepartureTime()}," +
+                            $"{bookedSeatsStr}";
+                scheduleData.Add(line);
+            }
+            _dataManager.SaveSchedules(scheduleData);
+
+            List<string> ticketData = new List<string>();
+            foreach (Ticket ticket in _tickets)
+            {
+                string scheduleId = "";
+                foreach (Schedule schedule in _schedules)
+                {
+                    if (schedule.GetBookedSeats().Contains(ticket.GetSeatNumber()))
+                    {
+                        scheduleId = schedule.GetScheduleId();
+                        break;
+                    }
+                }
+
+                string line = $"{ticket.GetTicketId()},{scheduleId},{ticket.GetSeatNumber()}," +
+                            $"{ticket.GetPurchaseTime()},{ticket.GetPrice()}";
+                ticketData.Add(line);
+            }
+            _dataManager.SaveTickets(ticketData);
+
+            Console.WriteLine("Data saved successfully!");
+        }
+
         private void RunMainMenu()
         {
-            while (true)  // Infinite loop until user chooses to exit
+            while (true)
             {
-                Console.Clear();  // Clear the console screen
+                Console.Clear();
                 Console.WriteLine("=== BUS TERMINAL MAIN MENU ===");
                 Console.WriteLine("1. View Departures");
                 Console.WriteLine("2. Book Ticket");
                 Console.WriteLine("3. Add Schedule");
                 Console.WriteLine("4. View System Info");
-                Console.WriteLine("5. Exit");
+                Console.WriteLine("5. Save and Exit");
                 Console.Write("\nEnter choice (1-5): ");
 
-                // Get user's choice
                 string choice = Console.ReadLine();
 
-                // Process user's choice using switch statement
                 switch (choice)
                 {
                     case "1":
-                        ViewDepartures();  // Show upcoming bus departures
+                        ViewDepartures();
                         break;
                     case "2":
-                        BookTicket();      // Start ticket booking process
+                        BookTicket();
                         break;
                     case "3":
-                        AddSchedule();     // Allow adding new schedule
+                        AddSchedule();
                         break;
                     case "4":
-                        ViewSystemInfo();  // Show system statistics
+                        ViewSystemInfo();
                         break;
-                    case "5":  // Exit program
+                    case "5":  // Save and Exit program
+                        SaveSystemData();
                         Console.WriteLine("\nThank you for using Bus Terminal System!");
                         Console.WriteLine("Press any key to exit...");
                         Console.ReadKey();
                         return;  // Exit the while loop and method
-                    default:  // Invalid input
+                    default:
                         Console.WriteLine("\nInvalid choice! Press any key to continue...");
                         Console.ReadKey();
                         break;
@@ -139,71 +378,49 @@ namespace OOP_FINALS
             }
         }
 
-        // Show all upcoming bus departures
+        // Show all bus departures
         private void ViewDepartures()
         {
             Console.Clear();
-            Console.WriteLine("=== UPCOMING DEPARTURES ===\n");
+            Console.WriteLine("=== ALL SCHEDULES ===\n");
 
-            DateTime now = DateTime.Now;  // Get current date and time
-
-            // Create empty list for upcoming schedules
-            List<Schedule> upcomingSchedules = new List<Schedule>();
-
-            // Loop through ALL schedules to find upcoming ones
-            foreach (Schedule schedule in _schedules)
+            if (_schedules.Count == 0)
             {
-                // Check if departure time is in the FUTURE
-                if (schedule.GetDepartureTime() > now)
-                {
-                    upcomingSchedules.Add(schedule);  // Add to upcoming list
-                }
+                Console.WriteLine("No schedules found in the system.");
+                WaitForKey();
+                return;
             }
 
-            // **FIX: Sort schedules by departure time (Bubble Sort - no LINQ)**
-            // Bubble sort compares each pair and swaps if in wrong order
-            for (int i = 0; i < upcomingSchedules.Count - 1; i++)
+            // Sort schedules by departure time
+            List<Schedule> sortedSchedules = new List<Schedule>(_schedules);
+
+            for (int i = 0; i < sortedSchedules.Count - 1; i++)
             {
-                for (int j = i + 1; j < upcomingSchedules.Count; j++)
+                for (int j = i + 1; j < sortedSchedules.Count; j++)
                 {
-                    // If schedule[i] departs LATER than schedule[j]
-                    if (upcomingSchedules[i].GetDepartureTime() > upcomingSchedules[j].GetDepartureTime())
+                    if (sortedSchedules[i].GetDepartureTime() > sortedSchedules[j].GetDepartureTime())
                     {
-                        // Swap the two schedules
-                        Schedule temp = upcomingSchedules[i];
-                        upcomingSchedules[i] = upcomingSchedules[j];
-                        upcomingSchedules[j] = temp;
+                        Schedule temp = sortedSchedules[i];
+                        sortedSchedules[i] = sortedSchedules[j];
+                        sortedSchedules[j] = temp;
                     }
                 }
             }
 
-            // Check if any upcoming schedules were found
-            if (upcomingSchedules.Count == 0)
-            {
-                Console.WriteLine("No upcoming departures found.");
-                // **FIX: Added helpful message**
-                Console.WriteLine("\nNote: All sample schedules are for tomorrow.");
-            }
-            else
-            {
-                // **FIX: Improved table header with DATE column**
-                Console.WriteLine("ID    | Bus   | Destination     | Date       | Time  | Seats");
-                Console.WriteLine("------|-------|-----------------|------------|-------|------");
+            Console.WriteLine("Time     | Date       | Bus   | Destination     | Available Seats");
+            Console.WriteLine("---------|------------|-------|-----------------|----------------");
 
-                // Display each upcoming schedule
-                foreach (Schedule schedule in upcomingSchedules)
-                {
-                    // Format: SCH01 | BUS01 | Los Angeles | 12/16 | 08:00 | 47
-                    Console.WriteLine($"{schedule.GetScheduleId(),-5} | " +
-                                    $"{schedule.GetBus().GetBusId(),-5} | " +
-                                    $"{schedule.GetRoute().GetDestination(),-15} | " +
-                                    $"{schedule.GetDepartureTime():MM/dd}      | " +  // Show date (month/day)
-                                    $"{schedule.GetDepartureTime():HH:mm} | " +  // Show time (hour:minute)
-                                    $"{schedule.GetAvailableSeatCount(),-5}");   // Show available seats
-                }
+            foreach (Schedule schedule in sortedSchedules)
+            {
+                Console.WriteLine($"{schedule.GetDepartureTime():HH:mm}    | " +
+                                $"{schedule.GetDepartureTime():MM/dd/yyyy} | " +
+                                $"{schedule.GetBus().GetBusId(),-5} | " +
+                                $"{schedule.GetRoute().GetDestination(),-15} | " +
+                                $"{schedule.GetAvailableSeatCount()}");
             }
 
-            WaitForKey();  // Wait for user to press a key
+            Console.WriteLine($"\nTotal schedules: {_schedules.Count}");
+            WaitForKey();
         }
 
         // Book a ticket for a specific schedule and seat
@@ -212,15 +429,12 @@ namespace OOP_FINALS
             Console.Clear();
             Console.WriteLine("=== BOOK A TICKET ===\n");
 
-            DateTime now = DateTime.Now;  // Current time
-
-            // Find schedules available for booking
+            // Find schedules with available seats
             List<Schedule> availableSchedules = new List<Schedule>();
 
             foreach (Schedule schedule in _schedules)
             {
-                // Schedule must be in FUTURE AND have available seats
-                if (schedule.GetDepartureTime() > now && schedule.GetAvailableSeatCount() > 0)
+                if (schedule.GetAvailableSeatCount() > 0)
                 {
                     availableSchedules.Add(schedule);
                 }
@@ -230,13 +444,11 @@ namespace OOP_FINALS
             if (availableSchedules.Count == 0)
             {
                 Console.WriteLine("No schedules available for booking.");
-                // **FIX: Added helpful message**
-                Console.WriteLine("Note: Sample schedules are for tomorrow.");
                 WaitForKey();
                 return;  // Exit method early
             }
 
-            // **FIX: Improved display format with table**
+            // Display available schedules
             Console.WriteLine("Available Schedules:");
             Console.WriteLine("ID    | Destination     | Date       | Time  | Seats");
             Console.WriteLine("------|-----------------|------------|-------|------");
@@ -252,14 +464,12 @@ namespace OOP_FINALS
 
             // Get schedule ID from user
             Console.Write("\nEnter Schedule ID: ");
-            // **FIX: Convert to uppercase for case-insensitive comparison**
             string scheduleId = Console.ReadLine().ToUpper();
 
             // Find the selected schedule
             Schedule selectedSchedule = null;
             foreach (Schedule schedule in _schedules)
             {
-                // **FIX: Compare uppercase versions (case-insensitive)**
                 if (schedule.GetScheduleId().ToUpper() == scheduleId)
                 {
                     selectedSchedule = schedule;  // Found it!
@@ -270,16 +480,13 @@ namespace OOP_FINALS
             // Check if schedule was found
             if (selectedSchedule == null)
             {
-                // **FIX: Show available IDs to help user**
-                Console.WriteLine("Schedule not found! Available IDs: SCH01, SCH02, SCH03, SCH04");
-                WaitForKey();
-                return;
-            }
-
-            // Check if schedule hasn't departed yet
-            if (selectedSchedule.GetDepartureTime() < now)
-            {
-                Console.WriteLine("This schedule has already departed!");
+                // Show available IDs to help user
+                Console.Write("Schedule not found! Available IDs: ");
+                foreach (Schedule schedule in _schedules)
+                {
+                    Console.Write($"{schedule.GetScheduleId()} ");
+                }
+                Console.WriteLine();
                 WaitForKey();
                 return;
             }
@@ -338,7 +545,7 @@ namespace OOP_FINALS
                 // Create new ticket object
                 Ticket newTicket = new Ticket(selectedSchedule, seatNumber, ticketPrice);
 
-                // Add ticket to today's tickets list
+                // Add ticket to tickets list
                 _tickets.Add(newTicket);
 
                 // Print the ticket (like POS system)
@@ -362,7 +569,7 @@ namespace OOP_FINALS
             Console.Clear();
             Console.WriteLine("=== ADD NEW SCHEDULE ===\n");
 
-            // **FIX: Show ALL buses with their status**
+            // Show ALL buses with their status
             Console.WriteLine("All Buses:");
             Console.WriteLine("ID    | Driver          | Status    | Seats");
             Console.WriteLine("------|-----------------|-----------|------");
@@ -378,7 +585,6 @@ namespace OOP_FINALS
 
             // Get bus selection from user
             Console.Write("\nEnter Bus ID: ");
-            // **FIX: Convert to uppercase for case-insensitive comparison**
             string busId = Console.ReadLine().ToUpper();
 
             // Find selected bus
@@ -395,8 +601,13 @@ namespace OOP_FINALS
             // Check if bus was found
             if (selectedBus == null)
             {
-                // **FIX: Show available bus IDs**
-                Console.WriteLine("Bus not found! Available IDs: BUS01, BUS02");
+                // Show available bus IDs
+                Console.Write("Bus not found! Available IDs: ");
+                foreach (Bus bus in _buses)
+                {
+                    Console.Write($"{bus.GetBusId()} ");
+                }
+                Console.WriteLine();
                 WaitForKey();
                 return;
             }
@@ -437,41 +648,38 @@ namespace OOP_FINALS
             // Check if route was found
             if (selectedRoute == null)
             {
-                // **FIX: Show available route IDs**
-                Console.WriteLine("Route not found! Available IDs: R01, R02");
+                // Show available route IDs
+                Console.Write("Route not found! Available IDs: ");
+                foreach (Route route in _routes)
+                {
+                    Console.Write($"{route.GetRouteId()} ");
+                }
+                Console.WriteLine();
                 WaitForKey();
                 return;
             }
 
-            // **FIX: Show current time for reference**
-            Console.WriteLine($"\nCurrent date/time: {DateTime.Now:yyyy-MM-dd HH:mm}");
-            Console.WriteLine("Note: Enter a FUTURE date/time");
-            Console.Write("Enter departure time (yyyy-MM-dd HH:mm): ");
+            // Get departure date and time
+            Console.WriteLine("\nEnter departure date and time:");
+            Console.Write("Date (yyyy-MM-dd): ");
+            string dateInput = Console.ReadLine();
+            Console.Write("Time (HH:mm): ");
             string timeInput = Console.ReadLine();
 
-            // Validate time input format
-            if (!DateTime.TryParse(timeInput, out DateTime departureTime))
+            if (!DateTime.TryParse($"{dateInput} {timeInput}", out DateTime departureTime))
             {
                 Console.WriteLine("Invalid date/time format!");
                 WaitForKey();
                 return;
             }
 
-            // Check if time is in the future
-            if (departureTime < DateTime.Now)
-            {
-                Console.WriteLine("Cannot schedule in the past!");
-                WaitForKey();
-                return;
-            }
-
-            // Generate new schedule ID (SCH05, SCH06, etc.)
+            // Generate new schedule ID (SCH15, SCH16, etc.)
             string newScheduleId = "SCH" + (_schedules.Count + 1).ToString("00");
 
             // Create new schedule object
             Schedule newSchedule = new Schedule(newScheduleId, selectedBus, selectedRoute, departureTime);
 
-            // **KEY FEATURE: Check for schedule conflicts**
+            // Check for schedule conflicts
             bool conflictFound = false;
             foreach (Schedule existingSchedule in _schedules)
             {
@@ -514,8 +722,6 @@ namespace OOP_FINALS
             Console.Clear();
             Console.WriteLine("=== SYSTEM INFORMATION ===\n");
 
-            DateTime now = DateTime.Now;  // Current time
-
             // Calculate total buses
             int totalBuses = _buses.Count;
 
@@ -533,18 +739,7 @@ namespace OOP_FINALS
             int totalRoutes = _routes.Count;
             int totalSchedules = _schedules.Count;
 
-            // Count upcoming and completed schedules
-            int upcomingSchedules = 0;
-            int completedSchedules = 0;
-            foreach (Schedule schedule in _schedules)
-            {
-                if (schedule.GetDepartureTime() > now)
-                    upcomingSchedules++;
-                else
-                    completedSchedules++;
-            }
-
-            // Count tickets sold today
+            // Count tickets sold
             int totalTickets = _tickets.Count;
 
             // Calculate total revenue
@@ -560,21 +755,31 @@ namespace OOP_FINALS
             Console.WriteLine($"  • In Service:     {activeBuses}");
             Console.WriteLine($"Total Routes:       {totalRoutes}");
             Console.WriteLine($"Total Schedules:    {totalSchedules}");
-            Console.WriteLine($"  • Upcoming:       {upcomingSchedules}");
-            Console.WriteLine($"  • Completed:      {completedSchedules}");
-            Console.WriteLine($"Tickets Sold Today: {totalTickets}");
-            Console.WriteLine($"Today's Revenue:    ${totalRevenue:F2}");
+            Console.WriteLine($"Tickets Sold:       {totalTickets}");
+            Console.WriteLine($"Total Revenue:      ${totalRevenue:F2}");
 
-            // **FIX: Show bus details with status**
+            // ========== UPDATED SECTION STARTS HERE ==========
+            // Show bus details with status
             Console.WriteLine("\n--- Bus Details ---");
+            int availableCount = 0;
+            int inServiceCount = 0;
+
             foreach (Bus bus in _buses)
             {
                 string status = bus.IsAvailable() ? "Available" : "In Service";
+                string availabilityNote = bus.IsAvailable() ? " ✓ CAN BE ASSIGNED" : "";
+
+                if (bus.IsAvailable()) availableCount++;
+                else inServiceCount++;
+
                 Console.WriteLine($"{bus.GetBusId()}: {bus.GetDriverName()} " +
-                                $"({bus.GetTotalSeats()} seats) - {status}");
+                                $"({bus.GetTotalSeats()} seats) - {status}{availabilityNote}");
             }
 
-            // **FIX: Show route details with stop count**
+            Console.WriteLine($"\nSummary: {availableCount} available, {inServiceCount} in service");
+            // ========== UPDATED SECTION ENDS HERE ==========
+
+            // Show route details with stop count
             Console.WriteLine("\n--- Route Details ---");
             foreach (Route route in _routes)
             {
@@ -582,23 +787,20 @@ namespace OOP_FINALS
                                 $"({route.GetStops().Count} stops)");
             }
 
-            // **NEW: Show some upcoming schedules**
-            Console.WriteLine("\n--- Upcoming Schedules ---");
+            // Show some schedules
+            Console.WriteLine("\n--- Recent Schedules ---");
             int count = 0;
             foreach (Schedule schedule in _schedules)
             {
-                if (schedule.GetDepartureTime() > now)  // Only show future schedules
-                {
-                    Console.WriteLine($"{schedule.GetScheduleId()}: {schedule.GetBus().GetBusId()} " +
-                                    $"to {schedule.GetRoute().GetDestination()} at " +
-                                    $"{schedule.GetDepartureTime():MM/dd HH:mm} " +
-                                    $"({schedule.GetAvailableSeatCount()} seats available)");
-                    count++;
-                    if (count >= 5) break;  // Show only first 5
-                }
+                Console.WriteLine($"{schedule.GetScheduleId()}: {schedule.GetBus().GetBusId()} " +
+                                $"to {schedule.GetRoute().GetDestination()} at " +
+                                $"{schedule.GetDepartureTime():MM/dd HH:mm} " +
+                                $"({schedule.GetAvailableSeatCount()} seats available)");
+                count++;
+                if (count >= 5) break;  // Show only first 5
             }
-            if (count == 0)  // If no upcoming schedules
-                Console.WriteLine("No upcoming schedules.");
+            if (count == 0)
+                Console.WriteLine("No schedules found.");
 
             WaitForKey();
         }

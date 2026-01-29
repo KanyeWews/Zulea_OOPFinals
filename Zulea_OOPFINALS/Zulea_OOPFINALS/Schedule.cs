@@ -6,48 +6,41 @@ using System.Threading.Tasks;
 
 namespace OOP_FINALS
 {
-    internal class Schedule  // Represents a specific trip
+    internal class Schedule
     {
-        // Private fields
-        private string _scheduleId;    // Schedule ID like "SCH01"
-        private Bus _assignedBus;      // Which bus is used
-        private Route _assignedRoute;  // Which route
-        private DateTime _departureTime; // When it leaves
-        private DateTime _arrivalTime;   // When it arrives (3 hours later)
-        private bool[] _seats = new bool[50]; // 50 seats, true = available
-
-        // Constructor - creates a new schedule
+        private string _scheduleId;    
+        private Bus _assignedBus;      
+        private Route _assignedRoute;  
+        private DateTime _departureTime; 
+        private DateTime _arrivalTime;   
+        private bool[] _seats = new bool[50]; 
+ 
         public Schedule(string id, Bus bus, Route route, DateTime deptTime)
         {
-            _scheduleId = id;           // Set schedule ID
-            _assignedBus = bus;         // Assign bus
-            _assignedRoute = route;     // Assign route
-            _departureTime = deptTime;  // Set departure time
-            _arrivalTime = deptTime.AddHours(3); // Arrive 3 hours later
-
-            // Initialize all 50 seats as available (true)
+            _scheduleId = id;           
+            _assignedBus = bus;         
+            _assignedRoute = route;     
+            _departureTime = deptTime;  
+            _arrivalTime = deptTime.AddHours(3); 
+           
             for (int i = 0; i < 50; i++)
             {
-                _seats[i] = true;  // Seat is available
+                _seats[i] = true;  
             }
 
-            // Mark bus as in service (not available for other trips)
             _assignedBus.SetAvailability(false);
         }
 
-        // Getter methods
         public string GetScheduleId() { return _scheduleId; }
         public Bus GetBus() { return _assignedBus; }
         public Route GetRoute() { return _assignedRoute; }
         public DateTime GetDepartureTime() { return _departureTime; }
         public DateTime GetArrivalTime() { return _arrivalTime; }
 
-        // **KEY FEATURE: Check if two schedules conflict**
         public bool HasConflict(Schedule otherSchedule)
         {
-            // Check if same bus
             if (this._assignedBus.GetBusId() != otherSchedule._assignedBus.GetBusId())
-                return false;  // Different buses = no conflict
+                return false;
 
             // Check if time periods overlap
             // Example: 
@@ -110,7 +103,7 @@ namespace OOP_FINALS
             return count;  // Return total available seats
         }
 
-        // Get list of booked seats (optional method)
+        // Get list of booked seats (FOR FILE SAVING)
         public List<int> GetBookedSeats()
         {
             List<int> booked = new List<int>();
